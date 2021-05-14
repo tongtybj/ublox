@@ -47,9 +47,11 @@
 // ROS messages
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
 #include <geometry_msgs/Vector3Stamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <sensor_msgs/TimeReference.h>
 #include <sensor_msgs/Imu.h>
+#include <mavros_msgs/RTCM.h>
 // Other U-Blox package includes
 #include <ublox_msgs/ublox_msgs.h>
 // Ublox GPS includes
@@ -1319,6 +1321,11 @@ class HpgRovProduct: public virtual ComponentInterface {
   void callbackNavRelPosNed(const ublox_msgs::NavRELPOSNED &m);
 
 
+  /**
+   * @brief ROS callback to receive forwarding RTCM message from NTRIP caster
+   */
+  void rtcmCallback(const mavros_msgs::RTCM::ConstPtr &msg);
+
   //! Last relative position (used for diagnostic updater)
   ublox_msgs::NavRELPOSNED last_rel_pos_;
 
@@ -1328,6 +1335,9 @@ class HpgRovProduct: public virtual ComponentInterface {
 
   //! The RTCM topic frequency diagnostic updater
   UbloxTopicDiagnostic freq_rtcm_;
+
+  //! The Subscriber for the forwarding RTCM message from NTRIP caster
+  ros::Subscriber rtcm_sub_; 
 };
 
 class HpPosRecProduct: public virtual HpgRefProduct {

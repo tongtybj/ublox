@@ -314,7 +314,14 @@ class Gps {
    * the ublox manual first.
    */
   bool setTimtm2(uint8_t rate);
- 
+
+  /**
+   * @brief Send RTCM message to GPS.
+   * @param the raw forwarding message.
+   * @return true (always)
+   */
+  bool sendRtcm(const std::vector<uint8_t>& rtcm);
+
   /**
    * @brief Configure the U-Blox send rate of the message & subscribe to the
    * given message

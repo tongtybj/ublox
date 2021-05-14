@@ -215,7 +215,7 @@ class CallbackHandlers {
         ROS_DEBUG("U-blox: reading %d bytes\n%s", reader.length() + 8, 
                  oss.str().c_str());
       }
-
+      //ROS_INFO("reader.classId: 0x%02x, reader.messageId: 0x%02x", reader.classId(), reader.messageId());
       handle(reader);
     }
 

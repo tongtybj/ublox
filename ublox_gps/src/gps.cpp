@@ -587,4 +587,10 @@ bool Gps::setTimtm2(uint8_t rate) {
   msg.rate  = rate; 
   return configure(msg);
 }
+
+bool Gps::sendRtcm(const std::vector<uint8_t>& rtcm) {
+ worker_->send(rtcm.data(), rtcm.size());
+ return true;
+}
 }  // namespace ublox_gps
+

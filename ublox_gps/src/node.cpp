@@ -113,9 +113,11 @@ void UbloxNode::addFirmwareInterface() {
 
 void UbloxNode::addProductInterface(std::string product_category,
                                     std::string ref_rov) {
-  if (product_category.compare("HPG") == 0 && ref_rov.compare("REF") == 0)
+  bool force_rover;
+  nh->param("force_rover", force_rover, false);
+  if (product_category.compare("HPG") == 0 && ref_rov.compare("REF") == 0 && !force_rover)
     components_.push_back(ComponentPtr(new HpgRefProduct));
-  else if (product_category.compare("HPG") == 0 && ref_rov.compare("ROV") == 0)
+  else if (product_category.compare("HPG") == 0 && (ref_rov.compare("ROV") == 0 || force_rover))
     components_.push_back(ComponentPtr(new HpgRovProduct));
   else if (product_category.compare("HPG") == 0)
     components_.push_back(ComponentPtr(new HpPosRecProduct));
@@ -1606,6 +1608,10 @@ void HpgRovProduct::getRosParams() {
   // default to float, see CfgDGNSS message for details
   getRosUint("dgnss_mode", dgnss_mode_,
               ublox_msgs::CfgDGNSS::DGNSS_MODE_RTK_FIXED);
+
+  std::string rtcm_topic;
+  nh->param("rtcm_topic", rtcm_topic, std::string("rtk_gps/rtcm"));
+  rtcm_sub_ = nh->subscribe(rtcm_topic, 10, &HpgRovProduct::rtcmCallback, this);
 }
 
 bool HpgRovProduct::configureUblox() {
@@ -1671,10 +1677,30 @@ void HpgRovProduct::callbackNavRelPosNed(const ublox_msgs::NavRELPOSNED &m) {
     static ros::Publisher publisher =
         nh->advertise<ublox_msgs::NavRELPOSNED>("navrelposned", kROSQueueSize);
     publisher.publish(m);
+
+    static ros::Publisher relPosPublisher =
+      nh->advertise<geometry_msgs::PoseWithCovarianceStamped>("rtk_gps/rel_pos",
+                                                               kROSQueueSize);
+
+    geometry_msgs::PoseWithCovarianceStamped msg;
+    msg.header.stamp = ros::Time::now(); // TODO: show use the timestamp from GNSS (NAV-PVT), but need an offset because the walltime of machine
+    msg.header.frame_id = frame_id;
+    msg.pose.pose.position.x = (m.relPosN + (m.relPosHPN * 1e-2)) * 1e-2;
+    msg.pose.pose.position.y = -(m.relPosE + (m.relPosHPE * 1e-2)) * 1e-2;
+    msg.pose.pose.position.z = -(m.relPosD + (m.relPosHPD * 1e-2)) * 1e-2;
+    msg.pose.covariance[0] = m.accN * 1e-4;
+    msg.pose.covariance[7] = m.accE * 1e-4;
+    msg.pose.covariance[14] = m.accD * 1e-4;
+    relPosPublisher.publish(msg);
   }
 
   last_rel_pos_ = m;
   updater->update();
+}
+
+void HpgRovProduct::rtcmCallback(const mavros_msgs::RTCM::ConstPtr &msg)
+{
+  gps.sendRtcm(msg->data);
 }
 
 //

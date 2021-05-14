@@ -12,6 +12,8 @@
   <arg name="respawn_delay"       default="30" />
   <arg name="clear_params"        default="true" />
 
+  <arg name = "ntrip_ip" default="192.168.1.1" />
+
   <node pkg="ublox_gps" type="ublox_gps" name="$(arg node_name)"
         output="$(arg output)"
         clear_params="$(arg clear_params)"
@@ -20,4 +22,9 @@
     <rosparam command="load"
               file="$(arg param_file_dir)/$(arg param_file_name).yaml" />
   </node>
+
+  <!-- ntrip client -->
+  <include file="$(find ntrip_ros)/launch/ntrip_ros.launch" >
+    <arg name="ip" value="$(arg ntrip_ip)" />
+  </include>
 </launch>
