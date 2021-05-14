@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name = "ip" default="192.168.1.1" />
+  <arg name = "port" default="2101" />
+  <arg name = "user" default="jsk" />
+  <arg name = "pass" default="jsk" />
+  <arg name = "mountpoint" default="JSK" />
+  <arg name = "kashiwa" default="True"/>
+  <arg name = "name_gga" value="$GPGGA,%02d%02d%04.2f, 3553.719,N,13956.681,E,1,12,1.0,0.0,M,0.0,M,,*60" if="$(arg kashiwa)"/>
+  <arg name = "name_gga" value="$GPGGA,..." unless="$(arg kashiwa)"/>
+
+  <node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen">
+ 	 <param name="rtcm_topic" value="rtk_gps/rtcm"/>
+ 	 <param name="ntrip_server" value="$(arg ip):$(arg port)"/>
+ 	 <param name="ntrip_user" value="USER"/>
+ 	 <param name="ntrip_pass" value="PASS"/>
+ 	 <param name="ntrip_stream" value="$(arg mountpoint)"/>
+ 	 <param name="nmea_gga" value="$(arg name_gga)"/>
+  </node>
+</launch>
+
