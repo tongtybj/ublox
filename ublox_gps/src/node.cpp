@@ -1679,7 +1679,7 @@ void HpgRovProduct::callbackNavRelPosNed(const ublox_msgs::NavRELPOSNED &m) {
     publisher.publish(m);
 
     static ros::Publisher relPosPublisher =
-      nh->advertise<geometry_msgs::PoseWithCovarianceStamped>("rtk_gps/rel_pos",
+      nh->advertise<geometry_msgs::PoseWithCovarianceStamped>("rel_pos",
                                                                kROSQueueSize);
 
     geometry_msgs::PoseWithCovarianceStamped msg;

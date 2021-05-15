@@ -23,6 +23,7 @@
               file="$(arg param_file_dir)/$(arg param_file_name).yaml" />
   </node>
 
+  <!-- TODO: create another launch file only for rover with RTK GPS -->
   <!-- ntrip client -->
   <include file="$(find ntrip_ros)/launch/ntrip_ros.launch" >
     <arg name="ip" value="$(arg ntrip_ip)" />

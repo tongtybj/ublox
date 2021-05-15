@@ -10,7 +10,7 @@
   <arg name = "name_gga" value="$GPGGA,..." unless="$(arg kashiwa)"/>
 
   <node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen">
- 	 <param name="rtcm_topic" value="rtk_gps/rtcm"/>
+ 	 <param name="rtcm_topic" value="/rtk_gps/rtcm"/>
  	 <param name="ntrip_server" value="$(arg ip):$(arg port)"/>
  	 <param name="ntrip_user" value="USER"/>
  	 <param name="ntrip_pass" value="PASS"/>
