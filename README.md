@@ -3,6 +3,12 @@ The `ublox` package provides support for [u-blox](http://www.u-blox.com) GPS rec
 
 The driver was originally written by Johannes Meyer. Changes made later are detailed in the version history below.
 
+## Basic usage for ublox with ntrip client:
+```
+$ roslaunch ublox_gps ublox_device.launch param_file_name:=m8p # device interface with ublox gps
+$ roslaunch ntrip_ros ntrip_ros.launch ip:=192.168.1.102 #  NTRIP caster (server) IP address
+```
+
 ## Options
 
 Example .yaml configuration files are included in `ublox_gps/config`. Consult the u-blox documentation for your device for the recommended settings.
@@ -366,8 +372,3 @@ For debugging messages set the debug parameter to > 0. The range for debug is 0-
 
 # Links
 Consult the [official protocol spec](https://www.u-blox.com/sites/default/files/products/documents/u-blox8-M8_ReceiverDescrProtSpec_(UBX-13003221)_Public.pdf) for details on packets supported by u-blox devices.
-
-## Usage for ublox with ntrip client:
-```
-$ roslaunch ublox_gps ublox_device.launch param_file_name:=m8p ntrip_ip:=192.168.1.102
-```
