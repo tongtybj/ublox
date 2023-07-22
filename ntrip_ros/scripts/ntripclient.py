@@ -25,7 +25,7 @@ class ntripconnect(Thread):
         }
         connection = HTTPConnection(self.ntc.ntrip_server)
         now = datetime.datetime.utcnow()
-        connection.request('GET', '/'+self.ntc.ntrip_stream, headers=headers)
+        connection.request('GET', '/'+self.ntc.ntrip_mp, headers=headers)
 
         response = connection.getresponse()
         if response.status != 200: raise Exception("blah")
@@ -66,8 +66,7 @@ class ntripclient:
         self.ntrip_server = rospy.get_param('~ntrip_server')
         self.ntrip_user = rospy.get_param('~ntrip_user')
         self.ntrip_pass = rospy.get_param('~ntrip_pass')
-        self.ntrip_stream = rospy.get_param('~ntrip_stream')
-        self.nmea_gga = rospy.get_param('~nmea_gga')
+        self.ntrip_mp = rospy.get_param('~ntrip_mp')
 
         self.pub = rospy.Publisher(self.rtcm_topic, RTCM, queue_size=10)
 
