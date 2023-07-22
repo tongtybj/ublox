@@ -5,7 +5,8 @@ import rospy
 from mavros_msgs.msg import RTCM
 
 import datetime
-from httplib import HTTPConnection
+# from httplib import HTTPConnection
+from http.client import HTTPConnection
 from base64 import b64encode
 from threading import Thread
 
@@ -20,23 +21,28 @@ class ntripconnect(Thread):
             'Ntrip-Version': 'Ntrip/2.0',
             'User-Agent': 'NTRIP ntrip_ros',
             'Connection': 'close',
-            'Authorization': 'Basic ' + b64encode(self.ntc.ntrip_user + ':' + self.ntc.ntrip_pass)
+            'Authorization': 'Basic ' + b64encode((self.ntc.ntrip_user + ':' + self.ntc.ntrip_pass).encode('utf-8')).decode('utf-8')
         }
         connection = HTTPConnection(self.ntc.ntrip_server)
         now = datetime.datetime.utcnow()
-        connection.request('GET', '/'+self.ntc.ntrip_stream, self.ntc.nmea_gga % (now.hour, now.minute, now.second), headers)
+        connection.request('GET', '/'+self.ntc.ntrip_stream, headers=headers)
 
         response = connection.getresponse()
         if response.status != 200: raise Exception("blah")
+
         buf = ""
         rmsg = RTCM()
         while not self.stop:
-            data = response.read(1)
-            if data!=chr(211):
+
+            header = response.read(1)
+
+            if ord(header) != 0xd3:
+                #print("get first data: {}".format(header))
                 continue
-            l1 = ord(response.read(1))
-            l2 = ord(response.read(1))
-            pkt_len = ((l1&0x3)<<8)+l2
+
+            l1 = response.read(1)
+            l2 = response.read(1)
+            pkt_len = ((ord(l1)&0x3)<<8)+ord(l2)
 
             pkt = response.read(pkt_len)
             parity = response.read(3)
@@ -46,7 +52,7 @@ class ntripconnect(Thread):
             rospy.logdebug("recive RTCMX3 message, len: %d", len(pkt))
             rmsg.header.seq += 1
             rmsg.header.stamp = rospy.get_rostime()
-            rmsg.data = data + chr(l1) + chr(l2) + pkt + parity
+            rmsg.data = header + l1 + l2 + pkt + parity
             self.ntc.pub.publish(rmsg)
 
         connection.close()
