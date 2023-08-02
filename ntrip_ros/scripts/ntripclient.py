@@ -5,10 +5,17 @@ import rospy
 from mavros_msgs.msg import RTCM
 
 import datetime
-# from httplib import HTTPConnection
-from http.client import HTTPConnection
+
 from base64 import b64encode
 from threading import Thread
+
+import sys
+version = sys.version_info[0]
+if version == 2:
+    from httplib import HTTPConnection
+else: # python3
+    from http.client import HTTPConnection
+
 
 class ntripconnect(Thread):
     def __init__(self, ntc):
