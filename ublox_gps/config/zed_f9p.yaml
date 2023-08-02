@@ -4,3 +4,8 @@ force_rover: True
 config_on_startup: false
 
 rtcm_topic: /rtk_gps/rtcm
+
+publish:
+  nav:
+    pvt: true
+    relposned: true
