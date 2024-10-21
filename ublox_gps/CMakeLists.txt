@@ -7,12 +7,13 @@ find_package(catkin REQUIRED COMPONENTS
   ublox_msgs
   ublox_serialization
   diagnostic_updater
+  mavros_msgs
 )
 
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS tf roscpp ublox_msgs ublox_serialization)
+    CATKIN_DEPENDS tf roscpp ublox_msgs ublox_serialization mavros_msgs)
 
 # include boost
 find_package(Boost REQUIRED COMPONENTS system regex thread)
@@ -24,7 +25,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${catkin_INCLUDE_DIRS})
 
 # link pthread
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++17 -pthread")
 
 # build library
 add_library(ublox_gps src/gps.cpp)
